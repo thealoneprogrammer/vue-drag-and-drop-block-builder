@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <style>
+        .dataBlock {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-container>
+                <div class="row">
+                    <div class="col-md-8">
+                        <draggable v-model="jsonData">
+                            <v-row v-for="(element,index) in jsonData">
+                                <v-col class="dataBlock">
+                                    <v-card elevation="2">
+                                        <v-card-title>
+                                            {{element.text}}
+                                            <v-spacer></v-spacer>
+                                            <v-icon @click="editData(index,element.text)" color="pink">
+                                                mdi-pencil-box-multiple
+                                            </v-icon>
+                                            <v-icon @click="deleteData(index)" color="pink">mdi-delete
+                                            </v-icon>
+                                        </v-card-title>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </draggable>
+                    </div>
+                    <v-col cols="4">
+                        <v-card>
+                            <v-card-title>JSON DATA</v-card-title>
+                            <v-card-text>
+                                <pre>
+                                    {{jsonData}}
+                                </pre>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </div>
+                <v-dialog v-model="insertDialog" persistent max-width="290">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="pink" fab dark small fixed bottom right v-on="on">
+                            <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title class="headline">Add New Block</v-card-title>
+                        <v-card-text>
+                            <v-text-field label="Enter here" outlined dense v-model="text">
+                            </v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red darken-1" text @click="insertDialog = false">Cancel</v-btn>
+                            <v-btn color="green darken-1" text @click="insertData">Add</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
+                <v-dialog v-model="editDialog" persistent max-width="290">
+                    <v-card>
+                        <v-card-title class="headline">Edit Block</v-card-title>
+                        <v-card-text>
+                            <v-text-field outlined dense v-model="editText">
+                            </v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red darken-1" text @click="editDialog = false">Cancel</v-btn>
+                            <v-btn color="green darken-1" text @click="saveData">Save</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-container>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data() {
+                return {
+                    insertDialog: false,
+                    editDialog: false,
+                    text: this.text,
+                    editText: "",
+                    editIndex: "",
+                    jsonData: [
+                        {
+                            text: "Statement1"
+                        },
+                        {
+                            text: "Statement2"
+                        },
+                        {
+                            text: "Statement3"
+                        }
+                    ]
+                }
+            },
+            methods: {
+                insertData: function () {
+                    this.jsonData.push({
+                        text: this.text
+                    });
+                    this.insertDialog = false;
+                    this.text = null;
+                },
+
+                deleteData: function (index) {
+                    this.jsonData.splice(index, 1);
+                },
+
+                editData: function (index, text) {
+                    this.editDialog = true;
+                    this.editText = text;
+                    this.editIndex = index;
+                },
+
+                saveData: function () {
+                    this.jsonData[this.editIndex].text = this.editText;
+                    this.editDialog = false;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
